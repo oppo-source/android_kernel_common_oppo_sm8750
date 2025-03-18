@@ -1115,7 +1115,6 @@ void tick_nohz_idle_stop_tick(void)
 	ktime_t expires;
 
 	trace_android_vh_tick_nohz_idle_stop_tick(NULL);
-
 	/*
 	 * If tick_nohz_get_sleep_length() ran tick_nohz_next_event(), the
 	 * tick timer expiration time is known already.
