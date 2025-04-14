@@ -182,7 +182,7 @@ static inline int __task_prio(const struct task_struct *p)
 	if (p->sched_class == &idle_sched_class)
 		return MAX_RT_PRIO + NICE_WIDTH; /* 140 */
 
-	return MAX_RT_PRIO + MAX_NICE; /* 120, squash fair */
+	return MAX_RT_PRIO + MAX_NICE; /* 119, squash fair */
 }
 
 /*
@@ -4850,6 +4850,8 @@ late_initcall(sched_core_sysctl_init);
  */
 int sched_fork(unsigned long clone_flags, struct task_struct *p)
 {
+
+
 	trace_android_rvh_sched_fork(p);
 
 	__sched_fork(clone_flags, p);
@@ -4913,6 +4915,7 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
 	RB_CLEAR_NODE(&p->pushable_dl_tasks);
 #endif
 	return 0;
+
 }
 
 void sched_cgroup_fork(struct task_struct *p, struct kernel_clone_args *kargs)
@@ -4942,11 +4945,13 @@ void sched_cgroup_fork(struct task_struct *p, struct kernel_clone_args *kargs)
 	if (p->sched_class->task_fork)
 		p->sched_class->task_fork(p);
 	raw_spin_unlock_irqrestore(&p->pi_lock, flags);
+
 }
 
 void sched_post_fork(struct task_struct *p)
 {
 	uclamp_post_fork(p);
+
 }
 
 unsigned long to_ratio(u64 period, u64 runtime)
@@ -5814,11 +5819,11 @@ void scheduler_tick(void)
 		wq_worker_tick(curr);
 
 #ifdef CONFIG_SMP
-	rq->idle_balance = idle_cpu(cpu);
-	trigger_load_balance(rq);
+		rq->idle_balance = idle_cpu(cpu);
+		trigger_load_balance(rq);
 #endif
-
 	trace_android_vh_scheduler_tick(rq);
+
 }
 
 #ifdef CONFIG_NO_HZ_FULL
@@ -6120,6 +6125,7 @@ static void put_prev_task_balance(struct rq *rq, struct task_struct *prev,
 	 * We can terminate the balance pass as soon as we know there is
 	 * a runnable task of @class priority or higher.
 	 */
+
 	for_class_range(class, prev->sched_class, &idle_sched_class) {
 		if (class->balance(rq, prev, rf))
 			break;
@@ -6195,6 +6201,7 @@ static inline struct task_struct *pick_task(struct rq *rq)
 {
 	const struct sched_class *class;
 	struct task_struct *p;
+
 
 	for_each_class(class) {
 		p = class->pick_task(rq);
@@ -7793,6 +7800,7 @@ static int __sched_setscheduler(struct task_struct *p,
 	struct rq *rq;
 	bool cpuset_locked = false;
 
+
 	/* The pi code expects interrupts enabled */
 	BUG_ON(pi && in_interrupt());
 recheck:
@@ -7857,6 +7865,7 @@ recheck:
 	 * To be able to change p->policy safely, the appropriate
 	 * runqueue lock must be held.
 	 */
+
 	rq = task_rq_lock(p, &rf);
 	update_rq_clock(rq);
 
@@ -7924,6 +7933,7 @@ change:
 	if (unlikely(oldpolicy != -1 && oldpolicy != p->policy)) {
 		policy = oldpolicy = -1;
 		task_rq_unlock(rq, p, &rf);
+
 		if (cpuset_locked)
 			cpuset_unlock();
 		goto recheck;
@@ -8006,6 +8016,7 @@ change:
 
 unlock:
 	task_rq_unlock(rq, p, &rf);
+
 	if (cpuset_locked)
 		cpuset_unlock();
 	return retval;
@@ -10831,8 +10842,10 @@ static void cpu_cgroup_attach(struct cgroup_taskset *tset)
 	struct task_struct *task;
 	struct cgroup_subsys_state *css;
 
-	cgroup_taskset_for_each(task, css, tset)
+	cgroup_taskset_for_each(task, css, tset) {
+
 		sched_move_task(task);
+	}
 
 	trace_android_rvh_cpu_cgroup_attach(tset);
 }
@@ -11512,6 +11525,7 @@ static struct cftype cpu_legacy_files[] = {
 		.write_u64 = cpu_uclamp_ls_write_u64,
 	},
 #endif
+
 	{ }	/* Terminate */
 };
 

@@ -73,6 +73,7 @@ struct task_delay_info;
 struct task_group;
 struct user_event_mm;
 
+
 /*
  * Task state bitmask. NOTE! These bits are also
  * encoded in fs/proc/array.c: get_task_state().
@@ -1919,6 +1920,7 @@ static inline int task_nice(const struct task_struct *p)
 {
 	return PRIO_TO_NICE((p)->static_prio);
 }
+
 
 extern int can_nice(const struct task_struct *p, const int nice);
 extern int task_curr(const struct task_struct *p);
